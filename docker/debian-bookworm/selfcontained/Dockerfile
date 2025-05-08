@@ -10,7 +10,6 @@ RUN npm install --unsafe-perm \
     && mkdir -p /build/release/data/db \
     && mkdir -p /build/release/data/images \
     && mkdir -p /build/release/data/tmp \
-    && mkdir -p /build/release/data/test2 \
     && npm run create-release
 WORKDIR /build/release
 RUN npm install --unsafe-perm
