@@ -8,7 +8,7 @@ services:
     volumes:
       - "test_data:/app/data/config" # CHANGE ME
       - "db-data:/app/data/db"
-      - "/workspaces/pigallery2/images:/app/data/images:ro" # CHANGE ME, ':ro' means read-only
+      - "/workspaces/pigallery2/test_images:/app/data/images:ro" # CHANGE ME, ':ro' means read-only
       - "test_data:/app/data/tmp" # CHANGE ME
     ports:
       - 80:80
