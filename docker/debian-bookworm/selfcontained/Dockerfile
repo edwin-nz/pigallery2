@@ -4,6 +4,7 @@ FROM node:18-bookworm AS builder
 # LABEL maintainer="Patrik J. Braun"
 # copying only package{-lock}.json to make node_modules cachable
 RUN git clone https://github.com/edwin-nz/pigallery2 /build
+
 WORKDIR /build
 RUN npm install --unsafe-perm \
     && mkdir -p /build/release/data/config \
