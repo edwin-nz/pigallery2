@@ -1,4 +1,4 @@
-<div #photoContainer class="photo-container" (mouseover)="mouseOver()" (mouseout)="mouseOut()">
+<div #photoContainer class="photo-container overflow-hidden" (mouseover)="mouseOver()" (mouseout)="mouseOut()">
 
 
   <img alt="{{gridMedia.media.name}}" #img [src]="thumbnail.Src" (load)="loaded=true" [class.loading]="!loaded"
