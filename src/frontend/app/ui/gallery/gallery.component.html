@@ -42,7 +42,7 @@
       <div class="blog-map-row" *ngIf="ShowMarkDown || ShowMap">
         <app-gallery-blog [style.width]="blogOpen ?  '100%' : 'calc(100% - 100px)'" *ngIf="ShowMarkDown"
           [(open)]="blogOpen"></app-gallery-blog>
-        <app-gallery-map [class.rounded-start-0]="ShowMarkDown" *ngIf="ShowMap"
+        <app-gallery-map class="rounded" [class.rounded-start-0]="ShowMarkDown" *ngIf="ShowMap"
           [photos]="directoryContent?.mediaGroups | photosOnly"
           [gpxFiles]="directoryContent?.metaFile | gpxFiles"></app-gallery-map>
       </div>
