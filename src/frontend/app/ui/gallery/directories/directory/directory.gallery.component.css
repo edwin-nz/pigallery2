@@ -11,6 +11,7 @@ a {
 }
 
 .photo-container {
+  border: 1px solid #333;
   width: 180px;
   height: 180px;
   background-color: var(--item-background);
