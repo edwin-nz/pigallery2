@@ -26,7 +26,7 @@
       <div class="media-grid">
         <app-gallery-grid-photo *ngFor="let gridPhoto of group.media" (click)="photoClicked(gridPhoto.media)"
           [gridMedia]="gridPhoto" [style.width.px]="gridPhoto.renderWidth" [style.height.px]="gridPhoto.renderHeight"
-          [style.margin.px]="0">
+          [style.margin.px]="1">
         </app-gallery-grid-photo>
       </div>
     </ng-container>
