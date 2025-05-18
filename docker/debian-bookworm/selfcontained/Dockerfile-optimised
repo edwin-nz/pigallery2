@@ -1,0 +1,78 @@
+# ================= BUILDER STAGE =================
+# This stage is responsible for downloading dependencies and building the project.
+
+FROM node:18-bookworm AS builder
+
+# Set working directory inside the container
+WORKDIR /build
+
+# Clone the repository to get the latest PiGallery2 source code
+RUN git clone https://github.com/edwin-nz/pigallery2  /build
+
+# Now that we have package.json, copy it (no need to COPY from self)
+# No more `COPY --from=builder`, just use local files
+WORKDIR /build
+
+# Install dependencies
+RUN npm install --unsafe-perm
+
+# Create required directories
+RUN mkdir -p /build/release/data/config \
+    && mkdir -p /build/release/data/db \
+    && mkdir -p /build/release/data/images \
+    && mkdir -p /build/release/data/tmp
+
+# Run the build process
+RUN npm run create-release
+
+# Set working directory to release folder
+WORKDIR /build/release
+
+# Install production-only dependencies
+RUN npm install --unsafe-perm --omit=dev
+
+
+# ================= MAIN STAGE =================
+# This stage creates the final, production-ready container.
+
+FROM node:18-bookworm-slim AS main
+
+# Set the working directory for the application
+WORKDIR /app
+
+# Set environment variables to define important default settings
+# These values can be overridden via config.json or environment variables at runtime.
+ENV NODE_ENV=production \
+    default-Database-dbFolder=/app/data/db \
+    default-Media-folder=/app/data/images \
+    default-Media-tempFolder=/app/data/tmp \
+    default-Extensions-folder=/app/data/config/extensions \
+    PI_DOCKER=true
+
+# Install only required system dependencies and remove unnecessary files
+# - `--no-install-recommends` prevents unnecessary recommended packages
+# - `apt-get clean` and `rm -rf /var/lib/apt/lists/*` keep the image size small
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates wget ffmpeg \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Copy only the final built application from the builder stage
+# This ensures we only include necessary production files, not source code.
+COPY --from=builder /build/release /app
+
+# Run application diagnostics after the build to ensure it works
+# This verifies dependencies and prevents runtime failures.
+RUN node ./src/backend/index --expose-gc --run-diagnostics --config-path=/app/diagnostics-config.json
+
+# Expose the application on port 80
+EXPOSE 80
+
+# Define a health check to monitor if the application is running
+# This prevents unhealthy containers from staying up.
+HEALTHCHECK --interval=40s --timeout=30s --retries=3 --start-period=60s \
+    CMD wget --quiet --tries=1 --no-check-certificate --spider \
+    http://127.0.0.1:80/heartbeat || exit 1
+
+# Set the container entrypoint to start the PiGallery2 application
+# The "exec form" of ENTRYPOINT ensures that signals (e.g., SIGTERM) are properly received.
+ENTRYPOINT ["node", "./src/backend/index", "--expose-gc", "--config-path=/app/data/config/config.json"]
