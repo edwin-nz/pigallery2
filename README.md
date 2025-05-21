@@ -1,15 +1,8 @@
-# PiGallery2 
-![GitHub package.json version](https://img.shields.io/github/package-json/v/bpatrik/pigallery2)
-[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/bpatrik/pigallery2.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/bpatrik/pigallery2/context:javascript)
-[![Build Status](https://travis-ci.org/bpatrik/pigallery2.svg?branch=master)](https://travis-ci.org/bpatrik/pigallery2)
-[![Coverage Status](https://coveralls.io/repos/github/bpatrik/pigallery2/badge.svg?branch=master)](https://coveralls.io/github/bpatrik/pigallery2?branch=master)
-[![Docker build](https://github.com/bpatrik/pigallery2/workflows/docker-buildx/badge.svg)](https://github.com/bpatrik/pigallery2/actions)
-[![dependencies Status](https://david-dm.org/bpatrik/pigallery2/status.svg)](https://david-dm.org/bpatrik/pigallery2)
- 
+# PiGallery2-mod
 
-Homepage: http://bpatrik.github.io/pigallery2/
+This is a fork from: http://bpatrik.github.io/pigallery2/
 
-This is a **fast** (like faster than your PC fast) **directory-first photo gallery website**, optimised for running on low resource servers (especially on raspberry pi).
+A **fast** (like faster than your PC fast) **directory-first photo gallery website**, optimised for running on low resource servers (especially on raspberry pi).
 
 ✔️ Strengths:
  * ⚡ Fast, like for real.
@@ -150,20 +143,16 @@ apt-get install build-essential  libkrb5-dev gcc g++
 **Note**: you can also build your own release with as described in [1.1.1-b Install from source](#121-b-install-from-source);
 
 
-
 ## 3. Feature list
 
 See: http://bpatrik.github.io/pigallery2/
- 
-## 4. Suggest/endorse new features
-  Unfortunately, I only have a limited time for this hobby project of mine. 
-  And I mostly focus on those features that are align with my needs. Sorry :(.
-  Although, I try to fix bugs ASAP (that can still take from a few days to months).
-  **The recommended way of extending the projects is to implement the feature as an extension.** See [#743](https://github.com/bpatrik/pigallery2/issues/743).
-  If the extension framweork is not powerfull enough, so you can't implement your feature, you are welcome to open a FR bug and I will consider adding that.
-  If you really want to contribute and think that your feature has a place in the mainapp, look at [CONTRIBUTING.md](https://github.com/bpatrik/pigallery2/blob/master/CONTRIBUTING.md) for some guidance.
 
-## 5. Known errors
+Changes in this mod: 
+* Minor UI changes to gallery tiles
+* Use newer Bookworm image in Dockerfile build
+ 
+
+## 4. Known errors
 * IOS map issue
   * Map on IOS prevents using the buttons in the image preview navigation, see #155
 * Video support on weak servers (like raspberry pi) with low upload rate
@@ -171,15 +160,74 @@ See: http://bpatrik.github.io/pigallery2/
 * When using an Apache proxy, sub folders are not accessible
   * add `AllowEncodedSlashes On` in the configuration of the proxy
 
-## 6. Supporting the project
-I'm making this app for my own entertainment,
-but I like to share it with others as the contributions and bug reports make the app better
-and it also does not cost anything to me :)
+## 5. API Endpoints
 
-There is [no way to donate](https://github.com/bpatrik/pigallery2/discussions/328#discussioncomment-894546) to this project at the moment. And I'm also not planning on monetizing it.
-But it warms my hearth [seeing that it is useful for some people](docs/references/README.md). 
+* POST /pgapi/user/login 
+  * "username": "your_username",
+  * "password": "your_password"
 
+* POST /pgapi/user/logout 
 
-## 6. Credits
-Crossbrowser testing sponsored by [Browser Stack](https://www.browserstack.com)
-[<img src="https://camo.githubusercontent.com/a7b268f2785656ab3ca7b1cbb1633ee5affceb8f/68747470733a2f2f64677a6f7139623561736a67312e636c6f756466726f6e742e6e65742f70726f64756374696f6e2f696d616765732f6c61796f75742f6c6f676f2d6865616465722e706e67" alt="Browser Stack" height="31px" style="background: cornflowerblue;">](https://www.browserstack.com)
+* GET /pgapi/gallery/content/
+  * Retrieves gallery content, including images and metadata.
+  * Returns a list of ContentWrapper objects, which contain image metadata and URLs.
+
+* GET /pgapi/gallery/content/random
+  * Retrieves a random image from the gallery.
+  * Returns a single ContentWrapper object containing the random image's metadata and URL.
+
+* GET /pgapi/gallery/random/
+  * Retrieves a random image from the gallery (similar to the previous endpoint, but with a different path).
+  * Returns a single ContentWrapper object containing the random image's metadata and URL.
+
+* GET /gallery/?p=<image_name>
+  * Retrieves a specific image from the gallery by its name.
+  * Returns the image data and metadata in a ContentWrapper object.
+
+* GET /share/:sharingKey
+  * Retrieves a shared gallery or image by its sharing key.
+  * Returns a SharingDTO object containing the shared content's metadata and URL.
+
+* GET /pgapi/gallery/search
+  * Searches for images in the gallery based on query parameters (e.g., keywords, tags).
+  * Returns a list of SearchResultDTO objects containing the search results' metadata and URLs.
+
+* GET /pgapi/gallery/meta
+  * Retrieves metadata for a specific image or gallery.
+  * Returns a MetadataDTO object containing the image or gallery's metadata.
+
+* POST /pgapi/gallery/upload
+  * Uploads a new image to the gallery.
+  * Expects a multipart/form-data request with the image file and metadata.
+  * Returns a ContentWrapper object containing the uploaded image's metadata and URL.
+
+* PUT /pgapi/gallery/:image_id
+  * Updates an existing image in the gallery.
+  * Expects a JSON request with the updated image metadata.
+  * Returns a ContentWrapper object containing the updated image's metadata and URL.
+
+* DELETE /pgapi/gallery/:image_id
+  * Deletes an image from the gallery.
+  * Returns a success response if the image is deleted successfully.
+
+* GET /pgapi/gallery/reindex
+  * Reindexes the gallery content.
+  * Returns a success response if the reindexing is successful.
+
+* GET /pgapi/settings
+  * Retrieves the application settings.
+  * Returns a SettingsDTO object containing the application settings.
+
+* PUT /pgapi/settings
+  * Updates the application settings.
+  * Expects a JSON request with the updated settings.
+  * Returns a SettingsDTO object containing the updated settings.
+
+* Authentication and Authorization
+  * Many API endpoints require authentication and authorization.
+  * The AuthenticationMWs middleware is used to authenticate requests.
+  * The Authorise middleware is used to authorize requests based on user roles.
+
+* Error Handling
+  * The ErrorMWs middleware is used to handle errors and return error responses.
+  * Error responses are returned in a ErrorDTO object containing the error message and code.
