@@ -1,6 +1,6 @@
 services:
   pigallery2:
-    image: pigallery2-mod:latest
+    image: pigallery2-mod:v1.5
     container_name: pigallery2
     environment:
       - NODE_ENV=production # set to 'debug' for full debug logging
@@ -11,7 +11,7 @@ services:
       - "/workspaces/pigallery2/test_images:/app/data/images:ro" # CHANGE ME, ':ro' means read-only
       - "test_data:/app/data/tmp" # CHANGE ME
     ports:
-      - 80:80
+      - 8080:80
     restart: always
 
 volumes:
